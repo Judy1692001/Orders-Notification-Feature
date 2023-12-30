@@ -3,7 +3,7 @@ package com.example.demo.businesslogics;
 import com.example.demo.entity.Product;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.example.demo.database.ProductDB.warehouse;
@@ -16,13 +16,19 @@ public class ProductBL {
         warehouse.add(p);
     }
 
-    public void removeProduct(Product p)
+    public boolean removeProduct(int serialnumber)
     {
-        for(Product pr : warehouse)
+        for(Product p : warehouse)
         {
-            if(pr == p)
-                warehouse.remove(pr);
+            if(p.getSerialNo() == serialnumber)
+            {
+                warehouse.remove(p);
+
+                return true;
+            }
         }
+
+        return false;
     }
 
     public static List <Product> getInv() {

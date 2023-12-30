@@ -29,12 +29,13 @@ public class ProductController {
         return "Added Successfully";
     }
 
-    @DeleteMapping("/delete") // not working
-    public String RemoveProduct(@RequestBody Product p)
+    @DeleteMapping("/delete/{serialnumber}") // working
+    public String RemoveProduct(@PathVariable int serialnumber)
     {
-        pbl.removeProduct(p);
+        if(pbl.removeProduct(serialnumber))
+            return "Removed Successfully";
 
-        return "Removed Successfully";
+        return "Product doesn't exist";
     }
 
     @GetMapping("/count/{Category}") //working
@@ -47,5 +48,5 @@ public class ProductController {
     public static List <Product> DisplayProducts()
     {
         return getInv();
-    } //not updated with changes
+    }
 }
