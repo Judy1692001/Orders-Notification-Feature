@@ -7,14 +7,14 @@ public class Order {
     private int orderID;
     private Customer customer;
     private double shippingFees;
-    private List <Product> purchasedProducts = new ArrayList<>();
+    public static List <Product> purchasedProducts = new ArrayList<>();
 
     public Order(int orderID, Customer customer, double shippingFees, List <Product> purchasedProducts)
     {
         this.orderID = orderID;
         this.customer = customer;
         this.shippingFees = shippingFees;
-        this.purchasedProducts = purchasedProducts;
+        Order.purchasedProducts = purchasedProducts;
     }
 
     public void setOrderID(int orderID) {
@@ -42,7 +42,7 @@ public class Order {
     }
 
     public void setPurchasedProducts(List<Product> purchasedProducts) {
-        this.purchasedProducts = purchasedProducts;
+        Order.purchasedProducts = purchasedProducts;
     }
 
     public List<Product> getPurchasedProducts() {

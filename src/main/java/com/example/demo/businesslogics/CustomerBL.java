@@ -2,45 +2,52 @@ package com.example.demo.businesslogics;
 
 import com.example.demo.database.CustomerDB;
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo.database.CustomerDB.subscribers;
+import static com.example.demo.database.ProductDB.warehouse;
+
 
 @Service
 public class CustomerBL {
 
-    private CustomerDB subscribers;
+//    public void addCustomer(Customer c)
+//    {
+//
+//    }
 
-    public void addCustomer(Customer c)
+    public List <Product> createAccount(Customer c)
     {
-        subscribers.getSubscribers().add(c);
-    }
+        if(subscribers.isEmpty())
+        {
+            subscribers.add(c);
 
-    public boolean createAccount(Customer c)
-    {
-        CustomerDB db = new CustomerDB();
+            return warehouse;
+        }
 
-        for(Customer cust : subscribers.getSubscribers())
+        for(Customer cust : subscribers)
         {
             if(cust.getUserName().equals(c.getUserName()))
             {
                 if(cust.getEmail().equals(c.getEmail()))
-                    return false;
+                    return null;
             }
             else if(cust.getEmail().equals(c.getEmail()))
-                return false;
+                return null;
         }
 
-        subscribers.getSubscribers().add(c);
+        subscribers.add(c);
 
-        return true;
+        return warehouse;
     }
 
     public Customer getCustomer(int id)
     {
-        for(Customer c : subscribers.getSubscribers())
+        for(Customer c : subscribers)
         {
             if(c.getCustomerID() == id)
                 return c;
@@ -51,17 +58,21 @@ public class CustomerBL {
 
     public List <Customer> getAllCustomers()
     {
-        return subscribers.getSubscribers();
+        return subscribers;
     }
 
-    public void putBalance(int customerId, double Balance)
+    public boolean putBalance(int customerId, double Balance)
     {
-        for(Customer cust : subscribers.getSubscribers())
+        for(Customer cust : subscribers)
         {
             if(cust.getCustomerID() == customerId)
             {
                 cust.setBalance(cust.getBalance() + Balance);
+
+                return true;
             }
         }
+
+        return false;
     }
 }

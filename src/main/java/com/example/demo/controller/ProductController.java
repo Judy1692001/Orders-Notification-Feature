@@ -19,7 +19,7 @@ public class ProductController {
         this.pbl = pbl;
     }
 
-    @PostMapping("/add") //working
+    @PostMapping("/add")
     public String AddProduct(@RequestBody Product p)
     {
         pbl.addProduct(p);
@@ -27,7 +27,7 @@ public class ProductController {
         return "Added Successfully";
     }
 
-    @DeleteMapping("/delete") //working
+    @DeleteMapping("/delete")
     public String RemoveProduct(@RequestBody Product p)
     {
         pbl.removeProduct(p);
@@ -35,13 +35,13 @@ public class ProductController {
         return "Removed Successfully";
     }
 
-    @GetMapping("/count")  // not working
+    @GetMapping("/count")
     public int CountCategoryProducts(@RequestBody String Category)
     {
         return pbl.countOfRemainingItemsPerCategory(Category);
     }
 
-    @GetMapping("/display")  // working
+    @GetMapping("/display")
     public List <Product> DisplayProducts()
     {
         return pbl.getInv();
