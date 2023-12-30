@@ -3,7 +3,6 @@ package com.example.demo.businesslogics;
 import com.example.demo.entity.Product;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
 import java.util.List;
 
 import static com.example.demo.database.ProductDB.warehouse;
@@ -13,7 +12,18 @@ public class ProductBL {
 
     public void addProduct(Product p)
     {
+        for(Product pr : warehouse)
+        {
+            if(pr.getSerialNo() == p.getSerialNo())
+            {
+                pr.setRemainingParts(pr.getRemainingParts() + p.getRemainingParts());
+
+                return;
+            }
+        }
+
         warehouse.add(p);
+
     }
 
     public boolean removeProduct(int serialnumber)
