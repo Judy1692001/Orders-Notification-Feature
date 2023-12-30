@@ -20,6 +20,8 @@ public class CustomerBL {
 
     public boolean createAccount(Customer c)
     {
+        CustomerDB db = new CustomerDB();
+
         for(Customer cust : subscribers.getSubscribers())
         {
             if(cust.getUserName().equals(c.getUserName()))

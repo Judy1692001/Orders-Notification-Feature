@@ -38,7 +38,7 @@ public class CustomerController {
         return "You already have an account";
     }
 
-    @PutMapping("/addbalance/{customerid}/{newbalance}") //working
+    @PutMapping("/addbalance/{customerid}/{newbalance}")
     public String AddBalance(@PathVariable int customerid, @PathVariable double newbalance)
     {
         cbl.putBalance(customerid, newbalance);
@@ -46,19 +46,19 @@ public class CustomerController {
         return "Balance updated Successfully";
     }
 
-    @PostMapping("/order/simple") //not working - bad request
+    @PostMapping("/order/simple")
     public Order PlaceSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
     {
         return obl.createSimpleOrder(c, simpleOrder);
     }
 
-    @PostMapping("/order/compound") //not working - bad request
+    @PostMapping("/order/compound")
     public List <Order> PlaceCompoundOrder(@RequestBody List <Customer> customers, @RequestBody List<Order> compoundOrder)
     {
         return obl.createCompoundOrder(customers, compoundOrder);
     }
 
-    @PutMapping("/shipsimpleorder") //not working - bad request
+    @PutMapping("/shipsimpleorder")
     public String ShipSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
     {
         obl.shipSimpleOrder(c, simpleOrder);
@@ -66,7 +66,7 @@ public class CustomerController {
         return "Order Shipped Successfully!";
     }
 
-    @PutMapping("/shipcompoundorder") //not working - bad request
+    @PutMapping("/shipcompoundorder")
     public String ShipCompoundOrder(@RequestBody List <Customer> c, @RequestBody List <Order> compoundOrder)
     {
         obl.shipCompoundOrder(c, compoundOrder);
