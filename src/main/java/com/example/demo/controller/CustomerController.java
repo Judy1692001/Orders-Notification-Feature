@@ -23,12 +23,19 @@ public class CustomerController {
         this.obl = obl;
     }
 
-    @PostMapping("/createaccount")
-    public String CreateAccount(@RequestBody Customer c) //working
+    @GetMapping("/retrievecustomer/{id}")
+    public Customer getCustomer(@PathVariable int id)
     {
-        cbl.createAccount(c);
+        return cbl.getCustomer(id);
+    }
 
-        return "Account created Successfully";
+    @PostMapping("/createaccount")
+    public String CreateAccount(@RequestBody Customer c)
+    {
+        if(cbl.createAccount(c))
+            return "Account created Successfully";
+
+        return "You already have an account";
     }
 
     @PutMapping("/addbalance/{customerid}/{newbalance}") //working
@@ -39,21 +46,19 @@ public class CustomerController {
         return "Balance updated Successfully";
     }
 
-    @PostMapping("/order/simple") //not working
+    @PostMapping("/order/simple") //not working - bad request
     public Order PlaceSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
     {
         return obl.createSimpleOrder(c, simpleOrder);
     }
 
-    @PostMapping("/order/compound")
+    @PostMapping("/order/compound") //not working - bad request
     public List <Order> PlaceCompoundOrder(@RequestBody List <Customer> customers, @RequestBody List<Order> compoundOrder)
     {
         return obl.createCompoundOrder(customers, compoundOrder);
     }
 
-    // can ship order
-
-    @PutMapping("/shipsimpleorder")
+    @PutMapping("/shipsimpleorder") //not working - bad request
     public String ShipSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
     {
         obl.shipSimpleOrder(c, simpleOrder);
@@ -61,7 +66,7 @@ public class CustomerController {
         return "Order Shipped Successfully!";
     }
 
-    @PutMapping("/shipcompoundorder")
+    @PutMapping("/shipcompoundorder") //not working - bad request
     public String ShipCompoundOrder(@RequestBody List <Customer> c, @RequestBody List <Order> compoundOrder)
     {
         obl.shipCompoundOrder(c, compoundOrder);

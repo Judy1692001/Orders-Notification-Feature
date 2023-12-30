@@ -1,5 +1,6 @@
 package com.example.demo.businesslogics;
 
+import com.example.demo.database.CustomerDB;
 import com.example.demo.entity.Customer;
 import org.springframework.stereotype.Service;
 
@@ -10,26 +11,50 @@ import java.util.List;
 @Service
 public class CustomerBL {
 
-    private List <Customer> subscribers = new ArrayList<>();
+    private CustomerDB subscribers;
 
     public void addCustomer(Customer c)
     {
-        subscribers.add(c);
+        subscribers.getSubscribers().add(c);
     }
 
-    public void createAccount(Customer c)
+    public boolean createAccount(Customer c)
     {
-        subscribers.add(c);
+        for(Customer cust : subscribers.getSubscribers())
+        {
+            if(cust.getUserName().equals(c.getUserName()))
+            {
+                if(cust.getEmail().equals(c.getEmail()))
+                    return false;
+            }
+            else if(cust.getEmail().equals(c.getEmail()))
+                return false;
+        }
+
+        subscribers.getSubscribers().add(c);
+
+        return true;
+    }
+
+    public Customer getCustomer(int id)
+    {
+        for(Customer c : subscribers.getSubscribers())
+        {
+            if(c.getCustomerID() == id)
+                return c;
+        }
+
+        return null;
     }
 
     public List <Customer> getAllCustomers()
     {
-        return subscribers;
+        return subscribers.getSubscribers();
     }
 
     public void putBalance(int customerId, double Balance)
     {
-        for(Customer cust : subscribers)
+        for(Customer cust : subscribers.getSubscribers())
         {
             if(cust.getCustomerID() == customerId)
             {

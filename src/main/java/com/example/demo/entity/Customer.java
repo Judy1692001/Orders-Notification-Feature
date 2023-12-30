@@ -3,14 +3,16 @@ package com.example.demo.entity;
 public class Customer {
 
     private int customerID;
-    private String name;
+    private String userName;
+    private String email;
     private double balance;
     private String location;
 
-    public Customer(int customerID, String name, double balance, String location)
+    public Customer(int customerID, String userName, String email, double balance, String location)
     {
         this.customerID = customerID;
-        this.name = name;
+        this.userName = userName;
+        this.email = email;
         this.balance = balance;
         this.location = location;
     }
@@ -23,12 +25,20 @@ public class Customer {
         return customerID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void setBalance(double balance) {
