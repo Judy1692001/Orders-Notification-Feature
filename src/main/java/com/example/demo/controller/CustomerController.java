@@ -21,19 +21,19 @@ public class CustomerController {
         this.cbl = cbl;
     }
 
-    @GetMapping("/retrievecustomer/{id}")
+    @GetMapping("/retrievecustomer/{id}") // working
     public Customer getCustomer(@PathVariable int id)
     {
         return cbl.getCustomer(id);
     }
 
-    @PostMapping("/createaccount")
+    @PostMapping("/createaccount") // working
     public List <Product> CreateAccount(@RequestBody Customer c)
     {
         return cbl.createAccount(c);
     }
 
-    @PutMapping("/addbalance/{customerid}/{newbalance}")
+    @PutMapping("/addbalance/{customerid}/{newbalance}") //working
     public String AddBalance(@PathVariable int customerid, @PathVariable double newbalance)
     {
         if(cbl.putBalance(customerid, newbalance))

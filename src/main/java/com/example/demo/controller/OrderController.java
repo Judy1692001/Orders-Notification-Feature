@@ -19,13 +19,13 @@ public class OrderController {
         this.obl = obl;
     }
 
-    @PostMapping("/createsimpleorder/{c}/{simpleOrder}")
+    @PostMapping("/createsimpleorder") // bad syntax, why?
     public Order PlaceSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
     {
         return obl.createSimpleOrder(c, simpleOrder);
     }
 
-    @PostMapping("/createcompoundorder/customers/compoundOrder")
+    @PostMapping("/createcompoundorder")
     public List<Order> PlaceCompoundOrder(@RequestBody List <Customer> customers, @RequestBody List<Order> compoundOrder)
     {
         return obl.createCompoundOrder(customers, compoundOrder);

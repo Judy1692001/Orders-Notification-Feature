@@ -1,6 +1,5 @@
 package com.example.demo.businesslogics;
 
-import com.example.demo.database.CustomerDB;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Product;
 import org.springframework.stereotype.Service;
@@ -14,11 +13,6 @@ import static com.example.demo.database.ProductDB.warehouse;
 
 @Service
 public class CustomerBL {
-
-//    public void addCustomer(Customer c)
-//    {
-//
-//    }
 
     public List <Product> createAccount(Customer c)
     {

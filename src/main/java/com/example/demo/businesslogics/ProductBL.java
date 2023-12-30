@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo.database.ProductDB.warehouse;
+
 @Service
 public class ProductBL {
-
-    private List <Product> warehouse = new ArrayList<>();
 
     public void addProduct(Product p)
     {
@@ -18,10 +18,14 @@ public class ProductBL {
 
     public void removeProduct(Product p)
     {
-        warehouse.remove(p);
+        for(Product pr : warehouse)
+        {
+            if(pr == p)
+                warehouse.remove(pr);
+        }
     }
 
-    public List<Product> getInv() {
+    public static List <Product> getInv() {
         return warehouse;
     }
 
