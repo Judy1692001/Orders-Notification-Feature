@@ -1,12 +1,10 @@
 package com.example.demo.businesslogics;
 
-import com.example.demo.entity.Customer;
-import com.example.demo.entity.Order;
-import com.example.demo.entity.Product;
-import com.example.demo.entity.Status;
+import com.example.demo.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.example.demo.database.CustomerDB.subscribers;
@@ -19,11 +17,13 @@ public class OrderBL {
     public void addOrder(Order o)
     {
         orders.add(o);
+        o.getCustomer().placeOrder(o);
     }
 
     public void removeOrder(Order o)
     {
         orders.remove(o);
+        o.getCustomer().removeOrder(o);
     }
 
     public List <Order> getOrderHistory()
@@ -31,7 +31,7 @@ public class OrderBL {
         return orders;
     }
 
-    public double calcTotalAmount(Order o)
+    public double calcTotalAmount(SimpleOrder o)
     {
         double amount = 0.0;
 
@@ -43,12 +43,12 @@ public class OrderBL {
         return amount;
     }
 
-    public boolean checkBalance(Customer c, Order o)
+    public boolean checkBalance(Customer c, SimpleOrder o)
     {
         return c.getBalance() >= calcTotalAmount(o);
     }
 
-    public void deductBalance(Customer c, Order simpleOrder)
+    public void deductBalance(Customer c, SimpleOrder simpleOrder)
     {
         c.setBalance(c.getBalance() - calcTotalAmount(simpleOrder));
     }
@@ -58,7 +58,7 @@ public class OrderBL {
         cust.setBalance(cust.getBalance() - o.getShippingFees());
     }
 
-    public void updateInventory(Order order)
+    public void updateInventory(SimpleOrder order)
     {
         for(Product p : order.getPurchasedProducts())
         {
@@ -73,7 +73,7 @@ public class OrderBL {
             }
         }
     }
-    public void returnBalance(Customer c, Order simpleOrder)
+    public void returnBalance(Customer c, SimpleOrder simpleOrder)
     {
         c.setBalance(c.getBalance() + calcTotalAmount(simpleOrder));
     }
@@ -81,7 +81,7 @@ public class OrderBL {
     {
         cust.setBalance(cust.getBalance() + o.getShippingFees());
     }
-    public void returnToInventory(Order order)
+    public void returnToInventory(SimpleOrder order)
     {
         for(Product p : order.getPurchasedProducts())
         {
@@ -108,7 +108,7 @@ public class OrderBL {
         return false;
     }
 
-    public Order createSimpleOrder(Order simpleOrder)
+    public Order createSimpleOrder(SimpleOrder simpleOrder)
     {
         System.out.println("Here checking order " + simpleOrder.getOrderID());
         if(checkRegistration(simpleOrder.getCustomer()))
@@ -132,13 +132,13 @@ public class OrderBL {
         return null;
     }
 
-    public boolean checkLocation(List <Order> compoundOrder)
+    public boolean checkLocation(List <Customer> customers)
     {
-        for(int i=0; i<compoundOrder.size()-1; i++)
+        for(int i=0; i<customers.size()-1; i++)
         {
-            for(int j=i+1; j<compoundOrder.size(); j++)
+            for(int j=i+1; j<customers.size(); j++)
             {
-                if(!(compoundOrder.get(i).getCustomer().getLocation().equals(compoundOrder.get(j).getCustomer().getLocation())))
+                if(!(customers.get(i).getLocation().equals(customers.get(j).getLocation())))
                     return false;
             }
         }
@@ -183,25 +183,22 @@ public class OrderBL {
         return true;
     }
 
-    public List <Order> createCompoundOrder(List <Customer> customers, List <Order> compoundOrder)
+    public CompoundOrder createCompoundOrder(List <SimpleOrder> simpleOrders)
     {
-        for(Customer cust : customers)
+        LinkedList <Customer> customers = new LinkedList<>();
+        for(Order order : simpleOrders)
         {
-            if(!checkRegistration(cust))
+            if(!checkRegistration(order.getCustomer()))
                 return null;
-
+            customers.add(order.getCustomer());
         }
 
-        if(!checkIfExists(customers, orders))
-        {
-            return null;
-        }
 
-        if(checkLocation(compoundOrder))
+        if(checkLocation(customers))
         {
             for(Customer c : customers)
             {
-                for(Order o : compoundOrder)
+                for(SimpleOrder o : simpleOrders)
                 {
                     if(o.getCustomer() == c)
                     {
@@ -214,38 +211,28 @@ public class OrderBL {
                     }
                 }
             }
-            for (Order o:compoundOrder){
+
+            CompoundOrder compoundOrder = new CompoundOrder(orders.size() + 1);
+
+            for (SimpleOrder o:simpleOrders){
                 o.setPlacementTime(LocalDateTime.now());
                 o.setStatus(Status.PROCESSING);
+                compoundOrder.addCustomerOrder(o.getCustomer(), o);
             }
-            orders.addAll(compoundOrder);
-
-            for(Customer cust : customers)
-            {
-                for(Order o : compoundOrder)
-                {
-                    if(o.getCustomer() == cust)
-                    {
-                        deductBalance(cust, o);
-
-                        break;
-                    }
-                }
-            }
-
+            orders.add(compoundOrder);
             return compoundOrder;
         }
 
         return null;
     }
 
-    public boolean shipSimpleOrder(Customer c, Order o)
+    public boolean shipSimpleOrder(SimpleOrder o)
     {
-        if(checkRegistration(c))
+        if(checkRegistration(o.getCustomer()))
         {
             if(orders.contains(o))
             {
-                deductShippingFees(c, o);
+                deductShippingFees(o.getCustomer(), o);
                 o.setShippingTime(LocalDateTime.now());
                 o.setStatus(Status.SHIPPED);
                 updateInventory(o);
@@ -259,45 +246,45 @@ public class OrderBL {
         return false;
     }
 
-    public boolean shipCompoundOrder(List <Customer> customers, List <Order> o)
+    public boolean shipCompoundOrder(List <SimpleOrder> o)
     {
-        for(Customer cust : customers)
-        {
-            if(!checkRegistration(cust))
-                return false;
-        }
-
-        for(Order ord : o)
-        {
-            if(!orders.contains(ord))
-                return false;
-        }
-
-        double fees = o.get(0).getShippingFees() / customers.size();
-
-        for(Customer cust : customers)
-        {
-            cust.setBalance(cust.getBalance() - fees);
-        }
-
-        for(Order ord : o)
-        {
-            updateInventory(ord);
-            ord.setShippingTime(LocalDateTime.now());
-            ord.setStatus(Status.SHIPPED);
-        }
+//        for(Customer cust : customers)
+//        {
+//            if(!checkRegistration(cust))
+//                return false;
+//        }
+//
+//        for(Order ord : o)
+//        {
+//            if(!orders.contains(ord))
+//                return false;
+//        }
+//
+//        double fees = o.get(0).getShippingFees() / customers.size();
+//
+//        for(Customer cust : customers)
+//        {
+//            cust.setBalance(cust.getBalance() - fees);
+//        }
+//
+//        for(SimpleOrder ord : o)
+//        {
+//            updateInventory(ord);
+//            ord.setShippingTime(LocalDateTime.now());
+//            ord.setStatus(Status.SHIPPED);
+//        }
 
         return true;
     }
 
-    public boolean cancelSimpleOrderShipping(Customer c, Order o) {
-        if(checkRegistration(c))
+    public boolean cancelSimpleOrderShipping(SimpleOrder o) {
+        if(checkRegistration(o.getCustomer()))
         {
             if(orders.contains(o) && o.getStatus() == Status.SHIPPED) {
                 LocalDateTime cancelDeadline = o.getShippingTime().plusHours(24);
                 //return product & fee
                 if(LocalDateTime.now().isBefore(cancelDeadline)){
-                    returnShippingFees(c, o);
+                    returnShippingFees(o.getCustomer(), o);
                     returnToInventory(o);
                     o.setStatus(Status.PROCESSING);
                     return true;
@@ -307,90 +294,90 @@ public class OrderBL {
         }
         return false;
     }
-    public boolean cancelCompoundOrderShipping(List <Customer> customers, List <Order> o) {
-        for(Customer cust : customers)
-        {
-            if(!checkRegistration(cust))
-                return false;
-        }
-        for(Order ord : o) {
-            LocalDateTime cancelDeadline = ord.getShippingTime().plusHours(24);
-            if(!orders.contains(ord) && ord.getStatus() != Status.SHIPPED)
-                return false;
-            if(!LocalDateTime.now().isBefore(cancelDeadline))
-                return false;
-        }
-        double fees = o.get(0).getShippingFees() / customers.size();
-
-        for(Customer cust : customers) {
-            //fee returned
-            cust.setBalance(cust.getBalance() + fees);
-        }
-        for(Order ord : o) {
-            returnToInventory(ord);
-            ord.setStatus(Status.PROCESSING);
-        }
+    public boolean cancelCompoundOrderShipping(List <SimpleOrder> o) {
+//        for(Customer cust : customers)
+//        {
+//            if(!checkRegistration(cust))
+//                return false;
+//        }
+//        for(Order ord : o) {
+//            LocalDateTime cancelDeadline = ord.getShippingTime().plusHours(24);
+//            if(!orders.contains(ord) && ord.getStatus() != Status.SHIPPED)
+//                return false;
+//            if(!LocalDateTime.now().isBefore(cancelDeadline))
+//                return false;
+//        }
+//        double fees = o.get(0).getShippingFees() / customers.size();
+//
+//        for(Customer cust : customers) {
+//            //fee returned
+//            cust.setBalance(cust.getBalance() + fees);
+//        }
+//        for(SimpleOrder ord : o) {
+//            returnToInventory(ord);
+//            ord.setStatus(Status.PROCESSING);
+//        }
 
         return true;
     }
-    public List <Order> cancelallCompoundOrder(List <Customer> customers, List <Order> compoundOrder)
+    public List <Order> cancelallCompoundOrder(List <SimpleOrder> compoundOrder)
     {
-        for(Customer cust : customers)
-        {
-            if(!checkRegistration(cust))
-                return null;
-
-        }
-
-        if(!checkIfExists(customers, orders))
-        {
-            return null;
-        }
-
-        if(checkLocation(compoundOrder))
-        {
-            for(Customer c : customers)
-            {
-                for(Order o : compoundOrder)
-                {
-                    if(o.getCustomer() == c)
-                    {
-                        break;
-                    }
-                }
-            }
-            for(Customer cust : customers) {
-                for(Order o : compoundOrder) {
-                    if(o.getCustomer() == cust) {
-                        if(o.getStatus() == Status.SHIPPED)
-                            cancelSimpleOrderShipping(cust,o);
-                        if(o.getStatus()== Status.PROCESSING) {
-                            LocalDateTime cancelDeadline = o.getPlacementTime().plusDays(7);
-                            if(LocalDateTime.now().isBefore(cancelDeadline)){
-                                returnBalance(cust, o);
-                                o.setStatus(Status.CANCELED);
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-
-            return compoundOrder;
-        }
+//        for(Customer cust : customers)
+//        {
+//            if(!checkRegistration(cust))
+//                return null;
+//
+//        }
+//
+//        if(!checkIfExists(customers, orders))
+//        {
+//            return null;
+//        }
+//
+//        if(checkLocation(compoundOrder))
+//        {
+//            for(Customer c : customers)
+//            {
+//                for(Order o : compoundOrder)
+//                {
+//                    if(o.getCustomer() == c)
+//                    {
+//                        break;
+//                    }
+//                }
+//            }
+//            for(Customer cust : customers) {
+//                for(Order o : compoundOrder) {
+//                    if(o.getCustomer() == cust) {
+//                        if(o.getStatus() == Status.SHIPPED)
+//                            cancelSimpleOrderShipping(cust,o);
+//                        if(o.getStatus()== Status.PROCESSING) {
+//                            LocalDateTime cancelDeadline = o.getPlacementTime().plusDays(7);
+//                            if(LocalDateTime.now().isBefore(cancelDeadline)){
+//                                returnBalance(cust, o);
+//                                o.setStatus(Status.CANCELED);
+//                            }
+//                        }
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            return compoundOrder;
+//        }
 
         return null;
     }
 
-    public Order cancelallSimpleOrder(Customer c, Order simpleOrder) {
-        if(checkRegistration(c)) {
+    public Order cancelallSimpleOrder(SimpleOrder simpleOrder) {
+        if(checkRegistration(simpleOrder.getCustomer())) {
             if(orders.contains(simpleOrder)) {
                 if(simpleOrder.getStatus() == Status.SHIPPED)
-                    cancelSimpleOrderShipping(c,simpleOrder);
+                    cancelSimpleOrderShipping(simpleOrder);
                 if(simpleOrder.getStatus()== Status.PROCESSING) {
                     LocalDateTime cancelDeadline = simpleOrder.getPlacementTime().plusDays(7);
                     if(LocalDateTime.now().isBefore(cancelDeadline)){
-                        returnBalance(c, simpleOrder);
+                        returnBalance(simpleOrder.getCustomer(), simpleOrder);
                         simpleOrder.setStatus(Status.CANCELED);
                         return simpleOrder;
                     }

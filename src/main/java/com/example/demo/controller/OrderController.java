@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.businesslogics.OrderBL;
+import com.example.demo.entity.CompoundOrder;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Order;
+import com.example.demo.entity.SimpleOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,59 +22,59 @@ public class OrderController {
     }
 
     @PostMapping("/createsimpleorder")
-    public Order PlaceSimpleOrder(@RequestBody Order simpleOrder)
+    public Order PlaceSimpleOrder(@RequestBody SimpleOrder simpleOrder)
     {
         return obl.createSimpleOrder(simpleOrder);
     }
 
     @PostMapping("/createcompoundorder")
-    public List<Order> PlaceCompoundOrder(@RequestBody List <Customer> customers, @RequestBody List<Order> compoundOrder)
+    public CompoundOrder PlaceCompoundOrder(@RequestBody List<SimpleOrder> compoundOrder)
     {
-        return obl.createCompoundOrder(customers, compoundOrder);
+        return obl.createCompoundOrder(compoundOrder);
     }
 
     @PutMapping("/shipsimpleorder")
-    public String ShipSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
+    public String ShipSimpleOrder(@RequestBody SimpleOrder simpleOrder)
     {
-        obl.shipSimpleOrder(c, simpleOrder);
+        obl.shipSimpleOrder(simpleOrder);
 
         return "Order Shipped Successfully!";
     }
 
     @PutMapping("/shipcompoundorder")
-    public String ShipCompoundOrder(@RequestBody List <Customer> c, @RequestBody List <Order> compoundOrder)
+    public String ShipCompoundOrder(@RequestBody List <SimpleOrder> compoundOrder)
     {
-        obl.shipCompoundOrder(c, compoundOrder);
+        obl.shipCompoundOrder(compoundOrder);
 
         return "Order Shipped Successfully!";
     }
     @PutMapping("/cancelsimpleorderShipping")
-    public String CancelSimpleOrderShipping(@RequestBody Customer c, @RequestBody Order simpleOrder)
+    public String CancelSimpleOrderShipping(@RequestBody SimpleOrder simpleOrder)
     {
-        obl.cancelSimpleOrderShipping(c, simpleOrder);
+        obl.cancelSimpleOrderShipping(simpleOrder);
 
         return "Shipping canceled Successfully!";
     }
 
     @PutMapping("/cancelcompoundorderShipping")
-    public String CancelCompoundOrderShipping(@RequestBody List <Customer> c, @RequestBody List <Order> compoundOrder)
+    public String CancelCompoundOrderShipping(@RequestBody List <SimpleOrder> compoundOrder)
     {
-        obl.cancelCompoundOrderShipping(c, compoundOrder);
+        obl.cancelCompoundOrderShipping(compoundOrder);
 
         return "Shipping canceled Successfully!";
     }
     @PutMapping("/cancelsimpleorder")
-    public String CancelSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
+    public String CancelSimpleOrder(@RequestBody SimpleOrder simpleOrder)
     {
-        obl.cancelallSimpleOrder(c, simpleOrder);
+        obl.cancelallSimpleOrder(simpleOrder);
 
         return "Order canceled Successfully!";
     }
 
     @PutMapping("/cancelcompoundorder")
-    public String CancelCompoundOrder(@RequestBody List <Customer> c, @RequestBody List <Order> compoundOrder)
+    public String CancelCompoundOrder(@RequestBody List <SimpleOrder> compoundOrder)
     {
-        obl.cancelallCompoundOrder(c, compoundOrder);
+        obl.cancelallCompoundOrder(compoundOrder);
 
         return "Order canceled Successfully!";
     }

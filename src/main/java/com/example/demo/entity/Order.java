@@ -4,23 +4,28 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Order {
+public abstract class Order {
     private int orderID;
+
+    private int compoundOrderId;
     private Customer customer;
     private double shippingFees;
-    public static List <Product> purchasedProducts = new ArrayList<>();
     private Status status;
     private LocalDateTime PlacementTime;
     private LocalDateTime ShippingTime;
 
-    public Order(int orderID, Customer customer, double shippingFees, List <Product> purchasedProducts)
+    public Order(int orderID, Customer customer, double shippingFees)
     {
         this.orderID = orderID;
         this.customer = customer;
         this.shippingFees = shippingFees;
-        Order.purchasedProducts = purchasedProducts;
-//        this.status = Status.PROCESSING;
     }
+
+    public Order() {
+
+    }
+
+    public abstract double calculateTotalPrice();
 
     public void setOrderID(int orderID) {
         this.orderID = orderID;
@@ -46,14 +51,6 @@ public class Order {
         return shippingFees;
     }
 
-    public void setPurchasedProducts(List<Product> purchasedProducts) {
-        Order.purchasedProducts = purchasedProducts;
-    }
-
-    public List<Product> getPurchasedProducts() {
-        return purchasedProducts;
-    }
-
     public void setStatus(Status status) {
         this.status = status;
     }
@@ -76,5 +73,13 @@ public class Order {
 
     public void setPlacementTime(LocalDateTime placementTime) {
         PlacementTime = placementTime;
+    }
+
+    public int getCompoundOrderId() {
+        return compoundOrderId;
+    }
+
+    public void setCompoundOrderId(int compoundOrderId) {
+        this.compoundOrderId = compoundOrderId;
     }
 }
