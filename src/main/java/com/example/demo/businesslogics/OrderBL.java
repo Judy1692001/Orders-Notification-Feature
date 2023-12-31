@@ -101,7 +101,7 @@ public class OrderBL {
     {
         for(Customer cust : subscribers)
         {
-            if(cust == c)
+            if(cust.getEmail().equals(c.getEmail()))
                 return true;
         }
 
