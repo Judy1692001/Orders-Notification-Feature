@@ -20,7 +20,7 @@ public class OrderController {
     }
 
     @PostMapping("/createsimpleorder")
-    public Order PlaceSimpleOrder( Customer c,  Order simpleOrder)
+    public Order PlaceSimpleOrder(@RequestBody Customer c, @RequestBody Order simpleOrder)
     {
         return obl.createSimpleOrder(c, simpleOrder);
     }
