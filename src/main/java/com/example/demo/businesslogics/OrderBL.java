@@ -108,17 +108,17 @@ public class OrderBL {
         return false;
     }
 
-    public Order createSimpleOrder(Customer c, Order simpleOrder)
+    public Order createSimpleOrder(Order simpleOrder)
     {
-        if(checkRegistration(c))
+        if(checkRegistration(simpleOrder.getCustomer()))
         {
-            if(checkBalance(c, simpleOrder))
+            if(checkBalance(simpleOrder.getCustomer(), simpleOrder))
             {
                 simpleOrder.setPlacementTime(LocalDateTime.now());
                 simpleOrder.setStatus(Status.PROCESSING);
                 orders.add(simpleOrder);
 
-                deductBalance(c, simpleOrder);
+                deductBalance(simpleOrder.getCustomer(), simpleOrder);
 
                 return simpleOrder;
             }
