@@ -19,7 +19,7 @@ public class Order {
         this.customer = customer;
         this.shippingFees = shippingFees;
         Order.purchasedProducts = purchasedProducts;
-        this.status = Status.PROCESSING;
+//        this.status = Status.PROCESSING;
     }
 
     public void setOrderID(int orderID) {
