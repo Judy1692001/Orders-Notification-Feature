@@ -56,4 +56,16 @@ public class Product {
     public double getPrice() {
         return price;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "serialNo=" + serialNo +
+                ", name='" + name + '\'' +
+                ", vendor='" + vendor + '\'' +
+                ", category='" + category + '\'' +
+                ", remainingParts=" + remainingParts +
+                ", price=" + price +
+                '}';
+    }
 }

@@ -39,7 +39,7 @@ public class OrderBL {
         {
             amount += p.getPrice();
         }
-
+        System.out.println("Total order amount " + amount + " " + o.getPurchasedProducts());
         return amount;
     }
 
@@ -110,10 +110,13 @@ public class OrderBL {
 
     public Order createSimpleOrder(Order simpleOrder)
     {
+        System.out.println("Here checking order " + simpleOrder.getOrderID());
         if(checkRegistration(simpleOrder.getCustomer()))
         {
+            System.out.println("Passed check customer " + simpleOrder.getOrderID());
             if(checkBalance(simpleOrder.getCustomer(), simpleOrder))
             {
+                System.out.println("Passed check balance " + simpleOrder.getOrderID());
                 simpleOrder.setPlacementTime(LocalDateTime.now());
                 simpleOrder.setStatus(Status.PROCESSING);
                 orders.add(simpleOrder);
